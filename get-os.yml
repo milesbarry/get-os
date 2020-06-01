@@ -1,0 +1,29 @@
+---
+- hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Gather facts about host
+      setup:
+        gather_subset:
+          - "!all"
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - name: Setup the arrary of operating systems
+      set_fact:
+        os: []
+
+    - name: Process all hosts found
+      include_tasks: process-host.yml
+      with_items: "{{ hostvars }}"
+
+    - name: Write all OS items out to files
+      copy:
+        content: "{{ os[ item ] | join('\n')+'\n' }}"
+        dest: "{{ item }}"
+      with_items: "{{ os }}"

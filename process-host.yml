@@ -1,0 +1,15 @@
+---
+
+- name: Get OS and hostname variables setup
+  set_fact:
+    full_os: "{{ hostvars[item]['ansible_distribution'] }}-{{ hostvars[item]['ansible_distribution_version'] }}.hosts"
+    major_os: "{{ hostvars[item]['ansible_distribution'] }}-{{ hostvars[item]['ansible_distribution_major_version'] }}.hosts"
+    target: "{{ hostvars[item]['inventory_hostname'] }}"
+
+- name: Add hostame to full version
+  set_fact:
+    os: "{{ os | combine({ full_os: (os[full_os] | default([]) + [target]) }) }}"
+
+- name: Add target to major version
+  set_fact:
+    os: "{{ os | combine({ major_os: (os[major_os] | default([]) + [target]) }) }}"
